@@ -38,7 +38,7 @@ public class BehaviourCharacter : MonoBehaviour
         if(other.gameObject.tag == "backgroud"){
             countjump = maxjump;
             grouded = true;
-            movespeed = 5.0f;
+            movespeed = 7.5f;
         }    
     }
     private void Run(){
