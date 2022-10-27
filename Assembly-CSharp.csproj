@@ -36,8 +36,9 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scrip\CameraFollow.cs" />
+     <Compile Include="Assets\Scrip\ThangMayBehaviour.cs" />
      <Compile Include="Assets\Scrip\BehaviourCharacter.cs" />
+     <Compile Include="Assets\Scrip\CameraController.cs" />
     <Reference Include="UnityEngine">
         <HintPath>D:/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

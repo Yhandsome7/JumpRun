@@ -1,52 +1,89 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BehaviourCharacter : MonoBehaviour
 {
     
     [SerializeField] private float movespeed = 7f;
-    [SerializeField] private float jumpspeed = 14f;
-    private float addgravitation = 1f;
-    private Rigidbody2D Gravitation;
-    private int maxjump = 1;
+    [SerializeField] private float jumpspeed = 7f;
+    private Rigidbody2D player;
+    private Animator playerAnimation;
+    public int maxjump;
+    public Transform groundCheck;
+    public float groundCheckRadius;
+    public LayerMask groundLayer;
     private bool grouded = true;
     // Update is called once per frame
-    private int countjump;
+    private int countjump=0;
+
+    private Vector3 respawnPoint;
+    public GameObject fallDetector;
     private void Start() {
-        Gravitation = GetComponent<Rigidbody2D>();
+        player = GetComponent<Rigidbody2D>();
+        playerAnimation = GetComponent<Animator>();
+        respawnPoint= transform.position;
     }
     private void Update()
-    {
-           Run();
-        //   Jump();
+    {   
+        grouded=Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        Run();
         if(Input.GetKeyDown(KeyCode.Space)){
-            this.Dont_Jump_Twice();
+            if(grouded==true){
+                countjump=0;   
+            }
+            this.Dont_Jump_Max_Times();
+        }
+        fallDetector.transform.position = new Vector2(transform.position.x, fallDetector.transform.position.y);
+        playerAnimation.SetFloat("speed", Mathf.Abs(player.velocity.x));
+        playerAnimation.SetBool("onGround", grouded);
+    }
+    private void OnTriggerEnter2D(Collider2D collision){
+        if(collision.tag=="FallDetector"){
+            transform.position=respawnPoint;
+        }
+        if(collision.tag=="Portal"){
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            respawnPoint = transform.position;
         }
     }
-    private void Dont_Jump_Twice(){
-        if(countjump > 0 ){
-            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0,movespeed),ForceMode2D.Impulse);
-            grouded = false;
-            countjump = countjump - 1;
+    private void OnCollisionEnter2D(Collision2D other) { 
+    }
+    private void Dont_Jump_Max_Times(){
+        if(grouded==true){
+            Jump();
+            countjump = countjump + 1;
         }
-        if(countjump == 0){
+        else if(countjump < maxjump && grouded==false){
+            Jump();
+            countjump = countjump + 1;
+        }
+        if(countjump == maxjump){
             return;
         }
     }
-     private void OnCollisionEnter2D(Collision2D other) {
-        if(other.gameObject.tag == "backgroud"){
-            countjump = maxjump;
-            grouded = true;
-            movespeed = 7.5f;
-        }    
-    }
+     
     private void Run(){
-        float move  = Input.GetAxis("Horizontal")*movespeed*Time.deltaTime;
-        transform.Translate(move,0,0); 
+        float move  = Input.GetAxis("Horizontal")*movespeed;
+        if(move > 0f){
+            player.velocity=new Vector2(move, player.velocity.y);
+            player.transform.localScale = new Vector2(0.3006162f, 0.2518356f);
+        }
+        else if(move <0f){
+            player.velocity=new Vector2(move, player.velocity.y);
+            player.transform.localScale = new Vector2(-0.3006162f, 0.2518356f);
+        }
+        else{
+            player.velocity=new Vector2(0f, player.velocity.y);
+        }
     }
     private void Jump(){
-        float jump = Input.GetAxis("Jump")*jumpspeed*Time.deltaTime;
-        transform.Translate(0,jump,0);
+        player.velocity= new Vector2(player.velocity.x, jumpspeed);
+    }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }

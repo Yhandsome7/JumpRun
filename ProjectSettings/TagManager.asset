@@ -6,17 +6,19 @@ TagManager:
   tags:
   - cherries
   - backgroud
+  - FallDetector
+  - Portal
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - backgroud
+  - BackGroud
   - Water
   - UI
-  - character
+  - Character
   - 
-  - 
-  - 
+  - Ground
+  - FallDetector
   - 
   - 
   - 
